@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReusableEfCoreIncludes", "ReusableEfCoreIncludes\ReusableEfCoreIncludes.csproj", "{E57D1A5B-C4CB-4328-813B-566CBF9A40B9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReusableEfCoreIncludes.Tests", "ReusableEfCoreIncludes.Tests\ReusableEfCoreIncludes.Tests.csproj", "{5ACC27A9-5747-4BD8-8DF7-9C9DB5E26587}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReusableEfCoreIncludes.ExampleProject", "ReusableEfCoreIncludes.ExampleProject\ReusableEfCoreIncludes.ExampleProject.csproj", "{1B0B39A0-6CDB-4DDF-AF53-AF5B96437EFE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E57D1A5B-C4CB-4328-813B-566CBF9A40B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E57D1A5B-C4CB-4328-813B-566CBF9A40B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E57D1A5B-C4CB-4328-813B-566CBF9A40B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E57D1A5B-C4CB-4328-813B-566CBF9A40B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5ACC27A9-5747-4BD8-8DF7-9C9DB5E26587}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5ACC27A9-5747-4BD8-8DF7-9C9DB5E26587}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5ACC27A9-5747-4BD8-8DF7-9C9DB5E26587}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5ACC27A9-5747-4BD8-8DF7-9C9DB5E26587}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B0B39A0-6CDB-4DDF-AF53-AF5B96437EFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B0B39A0-6CDB-4DDF-AF53-AF5B96437EFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B0B39A0-6CDB-4DDF-AF53-AF5B96437EFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B0B39A0-6CDB-4DDF-AF53-AF5B96437EFE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
