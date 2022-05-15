@@ -15,6 +15,9 @@ public delegate IUIncludable<T, TProperty> IncludeBase<T, out TProperty>(IUInclu
 
 public static class UnifiedQueryableExtensions
 {
+    private static IUIncludable<T, P> Factory<T, P>(IIncludableQueryable<T, P> include) => new UInclude<T, P>(include);
+    private static IUIncludable<T, P> Factory<T, P>(IIncludableQueryable<T, IEnumerable<P>> include) => new UInclude<T, P>(include);
+    private static IUIncludable<T, T> Factory<T>(IQueryable<T> source) => new UInclude<T, T>(source);
     
     public static IUIncludable<T, P> IncludeExpression<T, P>(this IUIncludable<T> source, Include<T, P> expression) 
         where T : class => expression(source);
@@ -29,8 +32,8 @@ public static class UnifiedQueryableExtensions
         q as IUIncludeInternals<T, T> ?? throw new ArgumentException("Should be UnifiedQueryable instance");
     
     
-    public static IUIncludable<TEntity> BeginInclude<TEntity>(this IQueryable<TEntity> source) where TEntity : class => 
-        new IUInclude<TEntity, TEntity>(source);
+    public static IUIncludable<TEntity> BeginInclude<TEntity>(this IQueryable<TEntity> source) 
+        where TEntity : class => Factory(source);
 
     public static Expression<Func<T, TProperty>> BuildExpression<T, TProperty>(string paramName, string propertyName)
     {
@@ -95,8 +98,7 @@ public static class UnifiedQueryableExtensions
         throw new InvalidOperationException();
     }
 
-    private static IUIncludable<T, P> Factory<T, P>(IIncludableQueryable<T, P> include) => new IUInclude<T, P>(include);
-    private static IUIncludable<T, P> Factory<T, P>(IIncludableQueryable<T, IEnumerable<P>> include) => new IUInclude<T, P>(include);
+    
     
     public static IUIncludable<T, P> Include<T, P>(this IUIncludable<T> source, Expression<Func<T, P>> navigationPropertyPath) where T : class
     {
@@ -143,6 +145,6 @@ public static class UnifiedQueryableExtensions
 
     public static IUIncludable<TEntity, TEntity> ToBase<TEntity, TPreviousProperty>(
         this IUIncludable<TEntity, TPreviousProperty> source)
-        where TEntity : class => new IUInclude<TEntity, TEntity>(source.AsQueryable());
+        where TEntity : class => new UInclude<TEntity, TEntity>(source.AsQueryable());
     
 }
