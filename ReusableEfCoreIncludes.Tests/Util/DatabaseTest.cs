@@ -1,6 +1,6 @@
 ﻿using ReusableEfCoreIncludes.ExampleProject;
 
-namespace ReusableEfCoreIncludes.Tests;
+namespace ReusableEfCoreIncludes.Tests.Util;
 
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;

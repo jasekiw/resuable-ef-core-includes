@@ -1,4 +1,6 @@
-﻿namespace ReusableEfCoreIncludes;
+﻿using Microsoft.EntityFrameworkCore.Query;
+
+namespace ReusableEfCoreIncludes;
 
 using System;
 using System.Collections.Generic;
@@ -6,42 +8,29 @@ using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 
+public delegate IUIncludable<T, TProperty> Include<T, out TProperty>(IUIncludable<T> arg) where T : class;
+public delegate IUIncludable<T, TProperty> ThenInclude<T, TPrevProp, out TProperty>(IUIncludable<T, TPrevProp> arg) where T : class;
+public delegate IUIncludable<T, TProperty> IncludeBase<T, out TProperty>(IUIncludable<T, T> arg) where T : class;
+
+
 public static class UnifiedQueryableExtensions
 {
-    public static IUnifiedQueryable<TEntity, TProperty> IncludeExpression<TEntity, TProperty>(
-        this IUnifiedQueryable<TEntity, TEntity> source,
-        Func<IUnifiedQueryable<TEntity, TEntity>, IUnifiedQueryable<TEntity, TProperty>> expression
-    ) where TEntity : class => expression(source);
+    
+    public static IUIncludable<T, P> IncludeExpression<T, P>(this IUIncludable<T> source, Include<T, P> expression) 
+        where T : class => expression(source);
+    
+    private static IUIncludeInternals<T, P> DownCast<T, P>(IUIncludable<T, P> q) => 
+        q as IUIncludeInternals<T, P> ?? throw new ArgumentException("Should be UnifiedQueryable instance");
 
-    private static UnifiedQueryable<T, P> DownCast<T, P>(IUnifiedQueryable<T, P> q) => q is UnifiedQueryable<T, P> uq
-        ? uq
-        : throw new ArgumentException("Should be UnifiedQueryable instance");
-
-
-    public static IUnifiedQueryable<TEntity, TEntity> StartInclude<TEntity>(this IQueryable<TEntity> source)
-        where TEntity : class => new UnifiedQueryable<TEntity, TEntity>(source);
-
-    public static IUnifiedQueryable<TEntity, TProperty> ThenInclude<TEntity, TPreviousProperty, TProperty>(
-        this IUnifiedQueryable<TEntity, TPreviousProperty> source,
-        Expression<Func<TPreviousProperty, TProperty>> navigationPropertyPath)
-        where TEntity : class
-    {
-        var query = DownCast(source);
-        if (query.IncludableQueryable != null)
-            return new UnifiedQueryable<TEntity, TProperty>(
-                query.IncludableQueryable.ThenInclude(navigationPropertyPath));
-        if (query.IncludableManyQueryable != null)
-            return new UnifiedQueryable<TEntity, TProperty>(
-                query.IncludableManyQueryable.ThenInclude(navigationPropertyPath));
-        if (query.Queryable != null)
-        {
-            var newExpression =
-                ConvertExpressionParamType<TEntity, TPreviousProperty, TProperty>(navigationPropertyPath);
-            return new UnifiedQueryable<TEntity, TProperty>(query.Queryable.Include(newExpression));
-        }
-
-        throw new InvalidOperationException();
-    }
+    private static IUIncludeInternals<T, T> DownCast<T>(IUIncludable<T, T> q) => 
+        q as IUIncludeInternals<T, T> ?? throw new ArgumentException("Should be UnifiedQueryable instance");
+    
+    private static IUIncludeInternals<T, T> DownCast<T>(IUIncludable<T> q) => 
+        q as IUIncludeInternals<T, T> ?? throw new ArgumentException("Should be UnifiedQueryable instance");
+    
+    
+    public static IUIncludable<TEntity> BeginInclude<TEntity>(this IQueryable<TEntity> source) where TEntity : class => 
+        new IUInclude<TEntity, TEntity>(source);
 
     public static Expression<Func<T, TProperty>> BuildExpression<T, TProperty>(string paramName, string propertyName)
     {
@@ -51,75 +40,111 @@ public static class UnifiedQueryableExtensions
     }
 
     public static Expression<Func<TParam, TProperty>> ConvertExpressionParamType<TParam, ToldParam, TProperty>(
-        Expression<Func<ToldParam, TProperty>> source)
-    {
-        return BuildExpression<TParam, TProperty>(
+        Expression<Func<ToldParam, TProperty>> source) => 
+        BuildExpression<TParam, TProperty>(
             source.Parameters.First().Name,
             source.Body is MemberExpression me
                 ? me.Member.Name
                 : throw new ArgumentException(nameof(source.Body))
         );
-    }
+    
 
-    public static IUnifiedQueryable<TEntity, TProperty> ThenIncludeMany<TEntity, TPreviousProperty, TProperty>(
-        this IUnifiedQueryable<TEntity, TPreviousProperty> source,
-        Expression<Func<TPreviousProperty, IEnumerable<TProperty>>> navigationPropertyPath)
-        where TEntity : class
+    public static IUIncludable<T, TProp> ThenIncludeMany<T, TPrevProp, TProp>(
+        this IUIncludable<T, TPrevProp> source,
+        Expression<Func<TPrevProp, IEnumerable<TProp>>> navigationPropertyPath)
+        where T : class
     {
         var query = DownCast(source);
         if (query.IncludableQueryable != null)
-            return new UnifiedQueryable<TEntity, TProperty>(
-                query.IncludableQueryable.ThenInclude(navigationPropertyPath));
+            return Factory(query.IncludableQueryable.ThenInclude(navigationPropertyPath));
         if (query.IncludableManyQueryable != null)
-            return new UnifiedQueryable<TEntity, TProperty>(
-                query.IncludableManyQueryable.ThenInclude(navigationPropertyPath));
+            return Factory(query.IncludableManyQueryable.ThenInclude(navigationPropertyPath));
         if (query.Queryable != null)
-        {
-            var newExpression =
-                ConvertExpressionParamType<TEntity, TPreviousProperty, IEnumerable<TProperty>>(navigationPropertyPath);
-            return new UnifiedQueryable<TEntity, TProperty>(query.Queryable.Include(newExpression));
-        }
-
+            return Factory(query.Queryable.Include(ConvertExpressionParamType<T, TPrevProp, IEnumerable<TProp>>(navigationPropertyPath)));
+        throw new InvalidOperationException();
+    }
+    
+    public static IUIncludable<T, TProp> IncludeMany<T, TProp>(
+        this IUIncludable<T> source,
+        Expression<Func<T, IEnumerable<TProp>>> navigationPropertyPath)
+        where T : class
+    {
+        var query = DownCast(source);
+        if (query.IncludableQueryable != null)
+            return Factory(query.IncludableQueryable.Include(navigationPropertyPath));
+        if (query.IncludableManyQueryable != null)
+            return Factory(query.IncludableManyQueryable.Include(navigationPropertyPath));
+        if (query.Queryable != null)
+            return Factory(query.Queryable.Include(navigationPropertyPath));
+        throw new InvalidOperationException();
+    }
+    
+    public static IUIncludable<T, TProp> ThenIncludeMany<T, TPrevProp, TProp>(
+        this IUIncludable<T> source,
+        Include<T, TPrevProp> expression,
+        Expression<Func<TPrevProp, IEnumerable<TProp>>> navigationPropertyPath)
+        where T : class
+    {
+        var query = DownCast(expression(source));
+        if (query.IncludableQueryable != null)
+            return Factory(query.IncludableQueryable.ThenInclude(navigationPropertyPath));
+        if (query.IncludableManyQueryable != null)
+            return Factory(query.IncludableManyQueryable.ThenInclude(navigationPropertyPath));
+        if (query.Queryable != null)
+            return Factory(query.Queryable.Include(ConvertExpressionParamType<T, TPrevProp, IEnumerable<TProp>>(navigationPropertyPath)));
         throw new InvalidOperationException();
     }
 
-  
-    public static IUnifiedQueryable<TEntity, TProperty> ThenInclude<TEntity, TProperty>(
-        this IUnifiedQueryable<TEntity, TEntity> source,
-        Expression<Func<TEntity, TProperty>> navigationPropertyPath)
-        where TEntity : class
+    private static IUIncludable<T, P> Factory<T, P>(IIncludableQueryable<T, P> include) => new IUInclude<T, P>(include);
+    private static IUIncludable<T, P> Factory<T, P>(IIncludableQueryable<T, IEnumerable<P>> include) => new IUInclude<T, P>(include);
+    
+    public static IUIncludable<T, P> Include<T, P>(this IUIncludable<T> source, Expression<Func<T, P>> navigationPropertyPath) where T : class
     {
         var query = DownCast(source);
         if (query.Queryable != null)
-            return new UnifiedQueryable<TEntity, TProperty>(query.Queryable.Include(navigationPropertyPath));
+            return new IUInclude<T, P>(query.Queryable.Include(navigationPropertyPath));
         if (query.IncludableQueryable != null)
-            return new UnifiedQueryable<TEntity, TProperty>(
-                query.IncludableQueryable.ThenInclude(navigationPropertyPath));
+            return new IUInclude<T, P>(
+                query.IncludableQueryable.Include(navigationPropertyPath));
         if (query.IncludableManyQueryable != null)
-            return new UnifiedQueryable<TEntity, TProperty>(
-                query.IncludableManyQueryable.ThenInclude(navigationPropertyPath));
+            return new IUInclude<T, P>(
+                query.IncludableManyQueryable.Include(navigationPropertyPath));
         throw new InvalidOperationException();
     }
     
-
-    public static IUnifiedQueryable<TEntity, TEntity> OptionalThenInclude<TEntity, TPreviousProperty, TProperty>(
-        this IUnifiedQueryable<TEntity, TPreviousProperty> source,
-        Expression<Func<TPreviousProperty, TProperty>> navigationPropertyPath,
-        bool performInclude)
-        where TEntity : class => !performInclude
-            ? (IUnifiedQueryable<TEntity, TEntity>)source
-            : source.ThenInclude(navigationPropertyPath).ToBase();
+    public static IUIncludable<T, TProp> ThenInclude<T, TPrevProp, TProp>(
+        this IUIncludable<T, TPrevProp> source, 
+        Expression<Func<TPrevProp, TProp>> navigationPropertyPath)
+        where T : class
+    {
+        var query = DownCast(source);
+        if (query.IncludableQueryable != null) 
+            return Factory(query.IncludableQueryable.ThenInclude(navigationPropertyPath));
+        if (query.IncludableManyQueryable != null)
+            return Factory(query.IncludableManyQueryable.ThenInclude(navigationPropertyPath));
+        if (query.Queryable != null)
+            return Factory(query.Queryable.Include(ConvertExpressionParamType<T, TPrevProp, TProp>(navigationPropertyPath)));
+        throw new InvalidOperationException();
+    }
     
+    public static IUIncludable<T, TProp> ThenIncludeFrom<T,TPrevProp, TProp>(
+        this IUIncludable<T> source, 
+        Include<T, TPrevProp> expression,
+        Expression<Func<TPrevProp, TProp>> navigationPropertyPath)
+        where T : class
+    {
+        var query = DownCast(expression(source));
+        if (query.IncludableQueryable != null) 
+            return Factory(query.IncludableQueryable.ThenInclude(navigationPropertyPath));
+        if (query.IncludableManyQueryable != null)
+            return Factory(query.IncludableManyQueryable.ThenInclude(navigationPropertyPath));
+        if (query.Queryable != null)
+            return Factory(query.Queryable.Include(ConvertExpressionParamType<T, TPrevProp, TProp>(navigationPropertyPath)));
+        throw new InvalidOperationException();
+    }
 
-    public static IUnifiedQueryable<TEntity, TProperty> IncludeMany<TEntity, TProperty>(
-        this IUnifiedQueryable<TEntity, TEntity> source,
-        Expression<Func<TEntity, IEnumerable<TProperty>>> navigationPropertyPath)
-        where TEntity : class => 
-        new UnifiedQueryable<TEntity, TProperty>(DownCast(source).EndInclude().Include(navigationPropertyPath));
-    
-
-    public static IUnifiedQueryable<TEntity, TEntity> ToBase<TEntity, TPreviousProperty>(
-        this IUnifiedQueryable<TEntity, TPreviousProperty> source)
-        where TEntity : class => new UnifiedQueryable<TEntity, TEntity>(source.EndInclude());
+    public static IUIncludable<TEntity, TEntity> ToBase<TEntity, TPreviousProperty>(
+        this IUIncludable<TEntity, TPreviousProperty> source)
+        where TEntity : class => new IUInclude<TEntity, TEntity>(source.AsQueryable());
     
 }

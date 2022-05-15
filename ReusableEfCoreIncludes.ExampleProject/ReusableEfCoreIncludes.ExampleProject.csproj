@@ -25,4 +25,8 @@
       <Folder Include="Migrations" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\ReusableEfCoreIncludes\ReusableEfCoreIncludes.csproj" />
+    </ItemGroup>
+
 </Project>
