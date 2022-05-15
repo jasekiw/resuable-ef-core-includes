@@ -102,13 +102,11 @@ public static class UnifiedQueryableExtensions
     {
         var query = DownCast(source);
         if (query.Queryable != null)
-            return new IUInclude<T, P>(query.Queryable.Include(navigationPropertyPath));
+            return Factory(query.Queryable.Include(navigationPropertyPath));
         if (query.IncludableQueryable != null)
-            return new IUInclude<T, P>(
-                query.IncludableQueryable.Include(navigationPropertyPath));
+            return Factory(query.IncludableQueryable.Include(navigationPropertyPath));
         if (query.IncludableManyQueryable != null)
-            return new IUInclude<T, P>(
-                query.IncludableManyQueryable.Include(navigationPropertyPath));
+            return Factory(query.IncludableManyQueryable.Include(navigationPropertyPath));
         throw new InvalidOperationException();
     }
     
