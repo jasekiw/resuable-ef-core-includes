@@ -79,7 +79,7 @@ public static class UnifiedQueryableExtensions
         throw new InvalidOperationException();
     }
     
-    public static IUIncludable<T, TProp> ThenIncludeMany<T, TPrevProp, TProp>(
+    public static IUIncludable<T, TProp> IncludeManyFrom<T, TPrevProp, TProp>(
         this IUIncludable<T> source,
         Include<T, TPrevProp> expression,
         Expression<Func<TPrevProp, IEnumerable<TProp>>> navigationPropertyPath)
@@ -127,7 +127,7 @@ public static class UnifiedQueryableExtensions
         throw new InvalidOperationException();
     }
     
-    public static IUIncludable<T, TProp> ThenIncludeFrom<T,TPrevProp, TProp>(
+    public static IUIncludable<T, TProp> IncludeFrom<T,TPrevProp, TProp>(
         this IUIncludable<T> source, 
         Include<T, TPrevProp> expression,
         Expression<Func<TPrevProp, TProp>> navigationPropertyPath)
