@@ -60,7 +60,8 @@ public class MainTest : DatabaseTest
             Assert.NotNull(company);
             Assert.IsNotEmpty(department.Users);
 
-            var user = await _context.Users.BeginInclude()
+            var user = await _context.Users
+                .BeginInclude()
                 .Include(u => u.Department)
                 .ThenInclude(u => u.Company)
                 .AsQueryable()
