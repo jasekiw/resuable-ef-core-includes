@@ -18,6 +18,7 @@ erDiagram
         int Id
         string Name
         int LeadUserId
+        int CompanyId
     }
     User |o--|| Department : has-lead-user
     User |o--|| Role : is-a
