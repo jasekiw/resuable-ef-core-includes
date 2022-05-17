@@ -6,6 +6,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReusableEfCoreIncludes.Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReusableEfCoreIncludes.ExampleProject", "ReusableEfCoreIncludes.ExampleProject\ReusableEfCoreIncludes.ExampleProject.csproj", "{1B0B39A0-6CDB-4DDF-AF53-AF5B96437EFE}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFiles", "SolutionFiles", "{C5CDC4F3-D4EE-44B8-8BEE-2AA13EC5611B}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
