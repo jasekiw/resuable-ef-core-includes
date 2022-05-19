@@ -1,12 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Query;
+﻿namespace ReusableEfCoreIncludes;
 
-namespace ReusableEfCoreIncludes;
-
+using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using static ExpressionUtil;
 
 public delegate IIncludable<T, TProperty> Include<T, out TProperty>(IIncludable<T> arg) where T : class;
 
@@ -19,17 +19,13 @@ public static class UnifiedQueryableExtensions
     public static IIncludable<T, P> IncludeExpression<T, P>(this IIncludable<T> source, Include<T, P>? expression)
         where T : class
     {
-        if(expression == null)
-            expression ??= Includes.FromBase<T, P>;
+        expression ??= Includes.FromBase<T, P>;
         return expression(source);
     }
     
     private static IIncludableInternals<T, P> DownCast<T, P>(IIncludable<T, P> q) => 
         q as IIncludableInternals<T, P> ?? throw new ArgumentException("Should be UnifiedQueryable instance");
 
-    private static IIncludableInternals<T, T> DownCast<T>(IIncludable<T, T> q) => 
-        q as IIncludableInternals<T, T> ?? throw new ArgumentException("Should be UnifiedQueryable instance");
-    
     private static IIncludableInternals<T, T> DownCast<T>(IIncludable<T> q) => 
         q as IIncludableInternals<T, T> ?? throw new ArgumentException("Should be UnifiedQueryable instance");
     
@@ -37,23 +33,7 @@ public static class UnifiedQueryableExtensions
     public static IIncludable<TEntity> BeginInclude<TEntity>(this IQueryable<TEntity> source) 
         where TEntity : class => Factory(source);
 
-    public static Expression<Func<T, TProperty>> BuildExpression<T, TProperty>(string paramName, string propertyName)
-    {
-        ParameterExpression argParam = Expression.Parameter(typeof(T), paramName);
-        Expression propertyExpression = Expression.Property(argParam, propertyName);
-        return Expression.Lambda<Func<T, TProperty>>(propertyExpression, argParam);
-    }
-
-    public static Expression<Func<TParam, TProperty>> ConvertExpressionParamType<TParam, ToldParam, TProperty>(
-        Expression<Func<ToldParam, TProperty>> source) => 
-        BuildExpression<TParam, TProperty>(
-            source.Parameters.First().Name,
-            source.Body is MemberExpression me
-                ? me.Member.Name
-                : throw new ArgumentException(nameof(source.Body))
-        );
     
-
     public static IIncludable<T, TProp> ThenIncludeMany<T, TPrevProp, TProp>(
         this IIncludable<T, TPrevProp> source,
         Expression<Func<TPrevProp, IEnumerable<TProp>>> navigationPropertyPath)
@@ -101,8 +81,6 @@ public static class UnifiedQueryableExtensions
             return Factory(query.Queryable.Include(ConvertExpressionParamType<T, TPrevProp, IEnumerable<TProp>>(navigationPropertyPath)));
         throw new InvalidOperationException();
     }
-
-    
     
     public static IIncludable<T, P> Include<T, P>(this IIncludable<T> source, Expression<Func<T, P>> navigationPropertyPath) where T : class
     {
@@ -148,8 +126,4 @@ public static class UnifiedQueryableExtensions
         throw new InvalidOperationException();
     }
 
-    public static IIncludable<TEntity, TEntity> ToBase<TEntity, TPreviousProperty>(
-        this IIncludable<TEntity, TPreviousProperty> source)
-        where TEntity : class => new Includable<TEntity, TEntity>(source.AsQueryable());
-    
 }
