@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using static ExpressionUtil;
 
 public delegate IIncludable<T, TProperty> Include<T, out TProperty>(IIncludable<T> arg) where T : class;
+public delegate IIncludable<T> AnonymousInclude<T>(IIncludable<T> arg) where T : class;
 
 public static class UnifiedQueryableExtensions
 {
@@ -107,6 +108,20 @@ public static class UnifiedQueryableExtensions
         if (query.Queryable != null)
             return Factory(query.Queryable.Include(ConvertExpressionParamType<T, TPrevProp, TProp>(navigationPropertyPath)));
         throw new InvalidOperationException();
+    }
+    
+    public static IIncludable<T> IncludeIf<T>(
+        this IIncludable<T> source, 
+        bool condition,
+        AnonymousInclude<T> expression)
+        where T : class
+    {
+        if (condition)
+        {
+            expression(source);
+        }
+
+        return source;
     }
     
     public static IIncludable<T, TProp> IncludeFrom<T,TPrevProp, TProp>(

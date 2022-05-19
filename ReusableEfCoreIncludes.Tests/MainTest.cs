@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
@@ -34,6 +33,15 @@ public class MainTest : DatabaseTest
             .AsNoTracking()
             .FirstOrDefaultAsync();
         AssertCompany(company);
+        
+        company = await _context!.Companies
+            .BeginInclude()
+            .IncludeCompany(Includes.FromBase, new CompanyIncludeOptions {ExcludeDepartments = true})
+            .AsQueryable()
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+        Assert.NotNull(company);
+        Assert.IsEmpty(company!.Departments);
     }
     
     [Test]
@@ -106,9 +114,7 @@ public class MainTest : DatabaseTest
         Assert.NotNull(department);
         Assert.NotNull(department!.LeadUser);
     }
-
     
-
     [Test]
     public async Task TestIncludeUserThenIncludeBase()
     {
