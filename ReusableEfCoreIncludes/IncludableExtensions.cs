@@ -11,29 +11,22 @@ using static ExpressionUtil;
 public delegate IIncludable<T, TProperty> Include<T, out TProperty>(IIncludable<T> arg) where T : class;
 public delegate IIncludable<T> AnonymousInclude<T>(IIncludable<T> arg) where T : class;
 
-public static class UnifiedQueryableExtensions
+public static class IncludableExtensions
 {
-    private static IIncludable<T, P> Factory<T, P>(IIncludableQueryable<T, P> include) => new Includable<T, P>(include);
-    private static IIncludable<T, P> Factory<T, P>(IIncludableQueryable<T, IEnumerable<P>> include) => new Includable<T, P>(include);
+    private static IIncludable<T, TP> Factory<T, TP>(IIncludableQueryable<T, TP> include) => new Includable<T, TP>(include);
+    private static IIncludable<T, TP> Factory<T, TP>(IIncludableQueryable<T, IEnumerable<TP>> include) => new Includable<T, TP>(include);
     private static IIncludable<T, T> Factory<T>(IQueryable<T> source) => new Includable<T, T>(source);
 
-    public static IIncludable<T, P> IncludeExpression<T, P>(this IIncludable<T> source, Include<T, P>? expression)
-        where T : class
-    {
-        expression ??= Includes.FromBase<T, P>;
-        return expression(source);
-    }
-    
-    private static IIncludableInternals<T, P> DownCast<T, P>(IIncludable<T, P> q) => 
-        q as IIncludableInternals<T, P> ?? throw new ArgumentException("Should be UnifiedQueryable instance");
+    public static IIncludable<T, TP> IncludeFrom<T, TP>(this IIncludable<T> source, Include<T, TP> expression) where T : class => expression(source);
+
+    private static IIncludableInternals<T, TP> DownCast<T, TP>(IIncludable<T, TP> q) => 
+        q as IIncludableInternals<T, TP> ?? throw new ArgumentException("Should be UnifiedQueryable instance");
 
     private static IIncludableInternals<T, T> DownCast<T>(IIncludable<T> q) => 
         q as IIncludableInternals<T, T> ?? throw new ArgumentException("Should be UnifiedQueryable instance");
-    
-    
+
     public static IIncludable<TEntity> BeginInclude<TEntity>(this IQueryable<TEntity> source) 
         where TEntity : class => Factory(source);
-
     
     public static IIncludable<T, TProp> ThenIncludeMany<T, TPrevProp, TProp>(
         this IIncludable<T, TPrevProp> source,
@@ -72,7 +65,7 @@ public static class UnifiedQueryableExtensions
         )
         where T : class
     {
-        expression ??= Includes.FromBase<T, TPrevProp>;
+        expression ??= Including.FromBase<T, TPrevProp>;
         var query = DownCast(expression(source));
         if (query.IncludableQueryable != null)
             return Factory(query.IncludableQueryable.ThenInclude(navigationPropertyPath));
@@ -83,7 +76,7 @@ public static class UnifiedQueryableExtensions
         throw new InvalidOperationException();
     }
     
-    public static IIncludable<T, P> Include<T, P>(this IIncludable<T> source, Expression<Func<T, P>> navigationPropertyPath) where T : class
+    public static IIncludable<T, TP> Include<T, TP>(this IIncludable<T> source, Expression<Func<T, TP>> navigationPropertyPath) where T : class
     {
         var query = DownCast(source);
         if (query.Queryable != null)
@@ -116,13 +109,9 @@ public static class UnifiedQueryableExtensions
         AnonymousInclude<T> expression)
         where T : class
     {
-        if (condition)
-        {
-            expression(source);
-        }
-
-        return source;
+        return condition ? expression(source) : source;
     }
+    
     
     public static IIncludable<T, TProp> IncludeFrom<T,TPrevProp, TProp>(
         this IIncludable<T> source, 
@@ -130,7 +119,7 @@ public static class UnifiedQueryableExtensions
         Expression<Func<TPrevProp, TProp>> navigationPropertyPath)
         where T : class
     {
-        expression ??= Includes.FromBase<T, TPrevProp>;
+        expression ??= Including.FromBase<T, TPrevProp>;
         var query = DownCast(expression(source));
         if (query.IncludableQueryable != null) 
             return Factory(query.IncludableQueryable.ThenInclude(navigationPropertyPath));

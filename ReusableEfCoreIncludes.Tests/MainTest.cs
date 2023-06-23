@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
@@ -20,23 +21,28 @@ public class MainTest : DatabaseTest
     public async Task TestIncludeCompany()
     {
         var company = await _context!.Companies
-            .BeginInclude()
-            .IncludeCompany(Includes.FromBase) // including a generic needs a helper if the types are specified directly
-            .AsQueryable()
-            .AsNoTracking()
-            .FirstOrDefaultAsync();
-        AssertCompany(company);
-        company = await _context!.Companies
-            .BeginInclude()
-            .IncludeCompany() // including a generic needs a helper if the types are specified directly
-            .AsQueryable()
+            // including a generic needs a helper if the types are specified directly
+            .BeginInclude().IncludeCompany().AsQueryable()
             .AsNoTracking()
             .FirstOrDefaultAsync();
         AssertCompany(company);
         
+        // can execute it again without issues
         company = await _context!.Companies
+            // including a generic needs a helper if the types are specified directly
+            .BeginInclude().IncludeCompany().AsQueryable()
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+        AssertCompany(company);
+        Assert.IsNotEmpty(company!.Departments);
+    }
+    
+    [Test]
+    public async Task TestIncludeCompanyExclusion()
+    {
+        var company = await _context!.Companies
             .BeginInclude()
-            .IncludeCompany(Includes.FromBase, new CompanyIncludeOptions {ExcludeDepartments = true})
+            .IncludeCompany(new CompanyIncludeOptions {ExcludeDepartments = true})
             .AsQueryable()
             .AsNoTracking()
             .FirstOrDefaultAsync();
@@ -54,6 +60,7 @@ public class MainTest : DatabaseTest
             .AsNoTracking()
             .FirstOrDefaultAsync();
         AssertDepartment(department);
+        Assert.IsNotEmpty(department!.Users);
     }
 
 
@@ -62,7 +69,7 @@ public class MainTest : DatabaseTest
     {
         var user = await _context!.Users
             .BeginInclude()
-            .IncludeUser(Includes.FromBase)
+            .IncludeUser()
             .AsQueryable()
             .AsNoTracking()
             .FirstOrDefaultAsync();
@@ -85,13 +92,13 @@ public class MainTest : DatabaseTest
 
         var company = await _context.Companies
             .BeginInclude()
-            .IncludeMany(c => c.Departments)
+            .IncludeMany(c => c.Departments.Where(d => d.Name.Contains("f")))
             .ThenIncludeMany(d => d.Users)
             .AsQueryable()
             .AsNoTracking()
             .FirstOrDefaultAsync();
         Assert.NotNull(company);
-        Assert.IsNotEmpty(department.Users);
+        Assert.IsEmpty(company!.Departments);
 
         var user = await _context.Users
             .BeginInclude()
@@ -107,7 +114,7 @@ public class MainTest : DatabaseTest
         department = await _context!.Departments
             .AsQueryable()
             .BeginInclude()
-            .IncludeLeadUser()
+            .IncludeLeadUser(Including.FromBase)
             .AsQueryable()
             .AsNoTracking()
             .FirstOrDefaultAsync();

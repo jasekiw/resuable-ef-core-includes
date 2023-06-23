@@ -2,7 +2,7 @@
 
 namespace ReusableEfCoreIncludes;
 
-public static class ExpressionUtil
+internal static class ExpressionUtil
 {
     public static Expression<Func<T, TProperty>> BuildExpression<T, TProperty>(string paramName, string propertyName)
     {

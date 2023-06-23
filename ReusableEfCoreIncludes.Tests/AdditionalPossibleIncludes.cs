@@ -4,8 +4,8 @@ namespace ReusableEfCoreIncludes.Tests;
 
 public static class AdditionalPossibleIncludes
 {
-    public static IIncludable<T> IncludeLeadUser<T>(this IIncludable<T> source, Include<T, Department>? include = null)
+    public static IIncludable<T> IncludeLeadUser<T>(this IIncludable<T> source, Include<T, Department> include)
         where T : class =>
         source
-            .IncludeExpression(include).ThenInclude(d => d.LeadUser);
+            .IncludeFrom(include).ThenInclude(d => d.LeadUser);
 }

@@ -8,7 +8,8 @@ public static class Assertions
     public static void AssertCompany(Company? c)
     {
         Assert.NotNull(c);
-        c!.Departments.ForEach(AssertDepartment);
+        Assert.IsNotEmpty(c!.Departments);
+        c.Departments.ForEach(AssertDepartment);
     }
     public static void AssertDepartment(Department? d)
     {
