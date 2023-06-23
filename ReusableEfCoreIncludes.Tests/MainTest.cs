@@ -103,13 +103,13 @@ public class MainTest : DatabaseTest
         var user = await _context.Users
             .BeginInclude()
             .Include(u => u.Department)
-            .ThenInclude(u => u.Company)
+            .ThenInclude(u => u!.Company)
             .AsQueryable()
             .AsNoTracking()
             .FirstOrDefaultAsync();
         Assert.NotNull(user);
         Assert.NotNull(user!.Department);
-        Assert.NotNull(user.Department.Company);
+        Assert.NotNull(user.Department!.Company);
         
         department = await _context!.Departments
             .AsQueryable()

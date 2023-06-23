@@ -9,10 +9,10 @@ public class ExampleContext  : DbContext
     {
     }
 
-    public DbSet<Company> Companies { get; set; }
-    public DbSet<Department> Departments { get; set; }
-    public DbSet<User> Users { get; set; }
-    public DbSet<Role> Roles { get; set; }
+    public DbSet<Company> Companies { get; set; } = null!;
+    public DbSet<Department> Departments { get; set; } = null!;
+    public DbSet<User> Users { get; set; } = null!;
+    public DbSet<Role> Roles { get; set; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

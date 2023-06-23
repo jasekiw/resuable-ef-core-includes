@@ -7,14 +7,16 @@ namespace ReusableEfCoreIncludes.ExampleProject.Models;
 public class Department
 {
     public int Id { get; set; }
-    public string Name { get; set; }
+    public string Name { get; set; } = "";
 
     [InverseProperty(nameof(User.Department))]
     public List<User> Users { get; set; } = new();
 
     public int? LeadUserId { get; set; }
 
-    [ForeignKey(nameof(LeadUserId))] public User? LeadUser { get; set; }
+    [ForeignKey(nameof(LeadUserId))] 
+    public User? LeadUser { get; set; }
     public int CompanyId { get; set; }
-    [ForeignKey(nameof(CompanyId))] public Company Company { get; set; }
+    [ForeignKey(nameof(CompanyId))] 
+    public Company? Company { get; set; }
 }

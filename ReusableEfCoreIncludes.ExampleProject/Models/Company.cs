@@ -6,7 +6,7 @@ namespace ReusableEfCoreIncludes.ExampleProject.Models;
 public class Company
 {
     public int Id { get; set; }
-    public string Name { get; set; }
+    public string Name { get; set; } = "";
 
     public Company(string name)
     {
