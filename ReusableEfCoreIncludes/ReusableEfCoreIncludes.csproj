@@ -5,8 +5,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <PackageId>ReusableEfCoreIncludes</PackageId>
-        <Version>6.0.0-beta.1</Version>
-        <PackageVersion>6.0.0-beta.1</PackageVersion>
+        <Version>6.0.0-beta.2</Version>
+        <PackageVersion>6.0.0-beta.2</PackageVersion>
         <Authors>jasekiw</Authors>
         <Company>jasekiw</Company>
         <PackageTags>efcore;Entity Framework Core;Includes;IQueryable;IQueryableIncludable</PackageTags>
