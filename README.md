@@ -66,7 +66,7 @@ public async Task TestIncludeCompany()
 {
     var company = await _context!.Companies
         .BeginInclude()
-        .IncludeCompany(Include.FromBase) // which also includes the department, see above!
+        .IncludeCompany(Including.FromBase) // which also includes the department, see above!
         .AsQueryable()
         .FirstOrDefaultAsync();
     AssertCompany(company);
@@ -77,7 +77,7 @@ public async Task TestIncludeDepartments()
 {
     var department = await _context!.Departments
         .BeginInclude()
-        .IncludeDepartment(Include.FromBase) // include the department by itself
+        .IncludeDepartment(Including.FromBase) // include the department by itself
         .AsQueryable()
         .FirstOrDefaultAsync();
     AssertDepartment(department);
