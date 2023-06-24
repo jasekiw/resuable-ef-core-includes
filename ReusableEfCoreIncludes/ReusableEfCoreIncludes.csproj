@@ -6,6 +6,7 @@
         <Nullable>enable</Nullable>
         <PackageId>ReusableEfCoreIncludes</PackageId>
         <Version>6.0.0-beta</Version>
+        <PackageVersion>6.0.0-beta</PackageVersion>
         <Authors>jasekiw</Authors>
         <Company>jasekiw</Company>
         <PackageTags>efcore;Entity Framework Core;Includes;IQueryable;IQueryableIncludable</PackageTags>
