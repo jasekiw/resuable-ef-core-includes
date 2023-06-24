@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using static ExpressionUtil;
 
 public delegate IIncludable<T, TProperty> Include<T, out TProperty>(IIncludable<T> arg) where T : class;
+// ReSharper disable once TypeParameterCanBeVariant
+public delegate IIncludable<T, TProperty> StackableInclude<T, TPrevProp, out TProperty>(IIncludable<T, TPrevProp> arg) where T : class;
 public delegate IIncludable<T> AnonymousInclude<T>(IIncludable<T> arg) where T : class;
 
 public static class IncludableExtensions
@@ -108,6 +110,15 @@ public static class IncludableExtensions
         bool condition,
         AnonymousInclude<T> expression)
         where T : class
+    {
+        return condition ? expression(source) : source;
+    }
+    
+    public static IIncludable<T> ThenIncludeIf<T, TPrevProp, TProp>(
+        this IIncludable<T, TPrevProp> source, 
+        bool condition,
+        StackableInclude<T, TPrevProp, TProp> expression)
+        where T : class where TPrevProp : class where TProp : class
     {
         return condition ? expression(source) : source;
     }

@@ -69,13 +69,26 @@ public class MainTest : DatabaseTest
     {
         var company = await _context!.Companies
             .BeginInclude()
-            .IncludeDepartmentTestDownCast(q => q.IncludeMany(c => c.Departments))
+            .IncludeDepartmentTestDownCast(q => q.IncludeMany(c => c.Departments), true)
             .AsQueryable()
             .AsNoTracking()
             .FirstOrDefaultAsync();
         Assert.IsNotEmpty(company!.Departments);
         Assert.IsNotEmpty(company!.Departments[0].Users);
         Assert.NotNull(company!.Departments[0].LeadUser);
+        Assert.NotNull(company!.Departments[0].LeadUser!.Role);
+    }
+    
+    [Test]
+    public async Task TestThenIncludeIf()
+    {
+        var company = await _context!.Companies
+            .BeginInclude()
+            .IncludeDepartmentTestDownCast(q => q.IncludeMany(c => c.Departments), false)
+            .AsQueryable()
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+        Assert.IsNull(company!.Departments[0].LeadUser!.Role);
     }
     
    

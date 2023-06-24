@@ -26,11 +26,11 @@ public static class ExampleIncludes
             .IncludeManyFrom(include, r => r.Users).ThenInclude(r => r.Role);
 
     public static IIncludable<T> IncludeDepartmentTestDownCast<T>(this IIncludable<T> source,
-        Include<T, Department> include)
+        Include<T, Department> include, bool includeUserRole)
         where T : class =>
         source
             .IncludeManyFrom(include, q => q.Users)
-            .IncludeFrom(include, q => q.LeadUser);
+            .IncludeFrom(include, q => q.LeadUser!).ThenIncludeIf(includeUserRole, q => q.ThenInclude(u => u.Role!));
 
     public static IIncludable<T> IncludeUser<T>(this IIncludable<T> source, Include<T, User> include)
         where T : class => 
