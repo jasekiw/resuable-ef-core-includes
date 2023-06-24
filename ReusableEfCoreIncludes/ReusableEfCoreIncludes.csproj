@@ -4,6 +4,16 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <PackageId>ReusableEfCoreIncludes</PackageId>
+        <Version>6.0.0-beta</Version>
+        <Authors>jasekiw</Authors>
+        <Company>jasekiw</Company>
+        <PackageTags>efcore;Entity Framework Core;Includes;IQueryable;IQueryableIncludable</PackageTags>
+        <Description>
+            This library provides a way to reuse ef core include expressions no matter where the source is.
+            want to Include an entity and a nested tree along with it? You can do that. Want to also include that from another
+            include? You can do that too.
+        </Description>
     </PropertyGroup>
 
     <ItemGroup>
