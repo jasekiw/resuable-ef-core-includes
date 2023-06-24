@@ -63,6 +63,22 @@ public class MainTest : DatabaseTest
         Assert.IsNotEmpty(department!.Users);
     }
 
+    
+    [Test]
+    public async Task TestIncludeDepartmentsDownCast()
+    {
+        var company = await _context!.Companies
+            .BeginInclude()
+            .IncludeDepartmentTestDownCast(q => q.IncludeMany(c => c.Departments))
+            .AsQueryable()
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+        Assert.IsNotEmpty(company!.Departments);
+        Assert.IsNotEmpty(company!.Departments[0].Users);
+        Assert.NotNull(company!.Departments[0].LeadUser);
+    }
+    
+   
 
     [Test]
     public async Task TestIncludeUser()

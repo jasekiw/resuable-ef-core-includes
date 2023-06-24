@@ -20,10 +20,10 @@ public static class IncludableExtensions
     public static IIncludable<T, TP> IncludeFrom<T, TP>(this IIncludable<T> source, Include<T, TP> expression) where T : class => expression(source);
 
     private static IIncludableInternals<T, TP> DownCast<T, TP>(IIncludable<T, TP> q) => 
-        q as IIncludableInternals<T, TP> ?? throw new ArgumentException("Should be UnifiedQueryable instance");
+        q as IIncludableInternals<T, TP> ?? throw new ArgumentException("Should be IIncludableInternals<T, TP> instance");
 
-    private static IIncludableInternals<T, T> DownCast<T>(IIncludable<T> q) => 
-        q as IIncludableInternals<T, T> ?? throw new ArgumentException("Should be UnifiedQueryable instance");
+    private static IIncludableInternals<T, T> DownCast<T>(IIncludable<T> q) =>
+        q as IIncludableInternals<T, T> ?? new Includable<T, T>(q.AsQueryable());
 
     public static IIncludable<TEntity> BeginInclude<TEntity>(this IQueryable<TEntity> source) 
         where TEntity : class => Factory(source);
