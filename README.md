@@ -1,4 +1,15 @@
-# Proof of concept of reusable includes
+# ReusableEfCoreIncludes
+
+## [NuGet](https://www.nuget.org/packages/ReusableEfCoreIncludes)
+
+[![NuGet Status](https://img.shields.io/nuget/v/ReusableEfCoreIncludes.svg?style=flat)](https://www.nuget.org/packages/ReusableEfCoreIncludes/)
+[![NuGet Count](https://img.shields.io/nuget/dt/ReusableEfCoreIncludes.svg)](https://www.nuget.org/packages/ReusableEfCoreIncludes/)
+
+To install the package run the following command on the Package Manager Console:
+
+```
+PM> Install-Package ReusableEfCoreIncludes
+```
 
 This proof of concept comes with an example project and the tests associates with it to
 demonstrate the reusability.
