@@ -7,6 +7,7 @@
         <PackageId>ReusableEfCoreIncludes</PackageId>
         <Version>6.0.0-beta.3</Version>
         <PackageVersion>6.0.0-beta.3</PackageVersion>
+        <RepositoryUrl>https://github.com/jasekiw/resuable-ef-core-includes</RepositoryUrl>
         <Authors>jasekiw</Authors>
         <Company>jasekiw</Company>
         <PackageTags>efcore;Entity Framework Core;Includes;IQueryable;IQueryableIncludable</PackageTags>
