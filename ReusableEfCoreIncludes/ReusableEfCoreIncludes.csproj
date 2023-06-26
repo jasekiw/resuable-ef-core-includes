@@ -10,6 +10,7 @@
         <RepositoryUrl>https://github.com/jasekiw/resuable-ef-core-includes</RepositoryUrl>
         <Authors>jasekiw</Authors>
         <Company>jasekiw</Company>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageTags>efcore;Entity Framework Core;Includes;IQueryable;IQueryableIncludable</PackageTags>
         <Description>
             This library provides a way to reuse ef core include expressions no matter where the source is.
