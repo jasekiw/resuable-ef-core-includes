@@ -12,11 +12,14 @@
         <PackageTags>efcore;Entity Framework Core;Includes;IQueryable;IQueryableIncludable</PackageTags>
         <Description>
             This library provides a way to reuse ef core include expressions no matter where the source is.
-            want to Include an entity and a nested tree along with it? You can do that. Want to also include that from another
-            include? You can do that too.
+            Want to include an entity and a nested tree along with it? You can do that. Want to also include that from another
+            DbSet? You can do that too.
         </Description>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
-
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="\"/>
+    </ItemGroup>
     <ItemGroup>
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.4" />
     </ItemGroup>
