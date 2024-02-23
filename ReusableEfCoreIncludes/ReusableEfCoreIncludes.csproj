@@ -1,12 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <PackageId>ReusableEfCoreIncludes</PackageId>
-        <Version>6.0.0-beta.3</Version>
-        <PackageVersion>6.0.0-beta.3</PackageVersion>
+        <Version>8.0.0-beta.3</Version>
+        <PackageVersion>8.0.0-beta.3</PackageVersion>
         <RepositoryUrl>https://github.com/jasekiw/resuable-ef-core-includes</RepositoryUrl>
         <Authors>jasekiw</Authors>
         <Company>jasekiw</Company>
@@ -23,7 +23,7 @@
         <None Include="README.md" Pack="true" PackagePath="\"/>
     </ItemGroup>
     <ItemGroup>
-      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.11" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.2" />
     </ItemGroup>
 
 </Project>
